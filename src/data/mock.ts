@@ -454,3 +454,73 @@ export const MOCK_DRIVERS: Driver[] = [
     avgFreshness: 90,
   },
 ];
+
+export type RequestStatus = "pending" | "approved" | "rejected";
+
+export type MarketplaceRequest = {
+  id: string;
+  requester: string;           // Nama marketplace partner
+  cargo: string[];             // Jenis kargo
+  cargoEmoji: string[];
+  weight: string;
+  origin: string;
+  destination: string;
+  date: string;
+  time: string;
+  tempC: string;
+  notes: string;
+  status: RequestStatus;
+  submittedAt: string;
+  zoneId?: string;             // Dari heatmap zone jika ada
+};
+
+export const MOCK_MARKETPLACE_REQUESTS: MarketplaceRequest[] = [
+  {
+    id: "req-1",
+    requester: "Superindo Sudirman",
+    cargo: ["Sayur", "Buah"],
+    cargoEmoji: ["🥬", "🍑"],
+    weight: "320",
+    origin: "Farm Organik Cibodas",
+    destination: "Superindo Sudirman, Jakarta",
+    date: "2026-05-18",
+    time: "06:00",
+    tempC: "4",
+    notes: "Tolong pastikan suhu stabil, produk premium.",
+    status: "pending",
+    submittedAt: "2026-05-17 10:24",
+    zoneId: "z2",
+  },
+  {
+    id: "req-2",
+    requester: "RS Siloam Semanggi",
+    cargo: ["Daging"],
+    cargoEmoji: ["🥩"],
+    weight: "150",
+    origin: "Cold Hub BSD City",
+    destination: "RS Siloam Semanggi",
+    date: "2026-05-18",
+    time: "08:30",
+    tempC: "2",
+    notes: "Untuk kebutuhan dapur RS, prioritas tinggi.",
+    status: "approved",
+    submittedAt: "2026-05-17 09:05",
+    zoneId: "z2",
+  },
+  {
+    id: "req-3",
+    requester: "PT Sejuk Ekspres",
+    cargo: ["Seafood"],
+    cargoEmoji: ["🐟"],
+    weight: "800",
+    origin: "Pelabuhan Muara Baru",
+    destination: "Pasar Swalayan Kelapa Gading",
+    date: "2026-05-19",
+    time: "05:00",
+    tempC: "-2",
+    notes: "Ikan segar, harus tiba sebelum toko buka.",
+    status: "pending",
+    submittedAt: "2026-05-17 11:50",
+    zoneId: "z3",
+  },
+];

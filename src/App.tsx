@@ -21,6 +21,7 @@ import { HeatmapPage } from "./pages/HeatmapPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { CreateShipmentPage } from "./pages/CreateShipmentPage";
 import { DriverManagementPage } from "./pages/DriverManagementPage";
+import { ShipmentRequestPage } from "./pages/ShipmentRequestPage";
 
 export default function App() {
   return (
@@ -55,6 +56,7 @@ export default function App() {
                   <Route path="heatmap" element={<HeatmapPage />} />
                   <Route path="create-shipment" element={<CreateShipmentPage />} />
                   <Route path="drivers" element={<DriverManagementPage />} />
+                  <Route path="request-shipment" element={<ShipmentRequestPage />} />
                 </Route>
               </Route>
             </Route>

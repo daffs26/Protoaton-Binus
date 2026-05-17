@@ -1,9 +1,9 @@
-import { AlertTriangle, ArrowRight, Brain, MapPinned, Package, BarChart3, Zap, Thermometer, Bell, Users, CheckCircle, X } from "lucide-react";
+import { AlertTriangle, ArrowRight, Brain, MapPinned, Package, BarChart3, Zap, Thermometer, Bell, Users, CheckCircle, X, Inbox } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { MapMock } from "../components/MapMock";
 import { Card, FreshnessBar, SectionHeader, StatCard } from "../components/Ui";
-import { MOCK_SHIPMENTS, MOCK_NOTIFICATIONS } from "../data/mock";
+import { MOCK_SHIPMENTS, MOCK_NOTIFICATIONS, MOCK_MARKETPLACE_REQUESTS } from "../data/mock";
 import { useApp } from "../context/AppContext";
 
 /* ── Operations Manager Dashboard ──────────────────────────────── */
@@ -214,6 +214,45 @@ function OperationsDashboard() {
                 </div>
               </Card>
             </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Permintaan Masuk dari Marketplace */}
+      <div className="anim-fade-up anim-delay-5" style={{ marginBottom: 16 }}>
+        <SectionHeader
+          title="Permintaan Masuk"
+          action={<span style={{ fontSize: 12, fontWeight: 700, color: "#7c3aed", padding: "3px 10px", borderRadius: 99, background: "rgba(124,58,237,0.10)", border: "1px solid rgba(124,58,237,0.22)" }}>{MOCK_MARKETPLACE_REQUESTS.filter(r => r.status === "pending").length} baru</span>}
+        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {MOCK_MARKETPLACE_REQUESTS.map(r => (
+            <div key={r.id} style={{ background: "#fff", borderRadius: 18, border: `1.5px solid ${r.status === "pending" ? "rgba(124,58,237,0.28)" : r.status === "approved" ? "rgba(16,185,129,0.28)" : "rgba(239,68,68,0.20)"}`, padding: "14px 16px", boxShadow: "var(--shadow-sm)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 14 }}>{r.requester}</div>
+                  <div style={{ fontSize: 11.5, color: "var(--text-secondary)", marginTop: 2 }}>{r.submittedAt}</div>
+                </div>
+                <span style={{ padding: "3px 10px", borderRadius: 99, fontSize: 11, fontWeight: 700, background: r.status === "pending" ? "rgba(124,58,237,0.10)" : r.status === "approved" ? "var(--success-soft)" : "var(--danger-soft)", color: r.status === "pending" ? "#7c3aed" : r.status === "approved" ? "var(--success-dark)" : "var(--danger-dark)", border: `1px solid ${r.status === "pending" ? "rgba(124,58,237,0.25)" : r.status === "approved" ? "rgba(16,185,129,0.25)" : "rgba(239,68,68,0.25)"}`, flexShrink: 0, marginLeft: 8 }}>
+                  {r.status === "pending" ? "⏳ Pending" : r.status === "approved" ? "✓ Disetujui" : "✕ Ditolak"}
+                </span>
+              </div>
+              <div style={{ fontSize: 13, marginBottom: 4 }}>{r.cargoEmoji.join(" ")} {r.cargo.join(", ")} · {r.weight} kg</div>
+              <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>📍 {r.origin} → {r.destination}</div>
+              <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>📅 {r.date} {r.time} · 🌡 {r.tempC}°C</div>
+              {r.status === "pending" && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
+                  <button type="button"
+                    onClick={() => nav("/app/create-shipment")}
+                    style={{ padding: "9px", borderRadius: 11, border: "none", background: "#7c3aed", color: "#fff", fontWeight: 800, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, boxShadow: "0 3px 12px rgba(124,58,237,0.35)" }}>
+                    <CheckCircle size={14} /> Terima & Buat
+                  </button>
+                  <button type="button"
+                    style={{ padding: "9px", borderRadius: 11, border: "1.5px solid rgba(239,68,68,0.35)", background: "transparent", color: "var(--danger-dark)", fontWeight: 700, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+                    <X size={14} /> Tolak
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -694,24 +733,47 @@ function MarketplaceDashboard() {
         {/* Quick actions — fully purple */}
         <div className="anim-fade-up anim-delay-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           <Link to="/app/history"
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-              padding: "13px 8px", borderRadius: 14, fontSize: 13, fontWeight: 700,
-              background: "rgba(124,58,237,0.10)", color: "#6d28d9",
-              border: "1.5px solid rgba(124,58,237,0.25)", textDecoration: "none",
-            }}>
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "13px 8px", borderRadius: 14, fontSize: 13, fontWeight: 700, background: "rgba(124,58,237,0.10)", color: "#6d28d9", border: "1.5px solid rgba(124,58,237,0.25)", textDecoration: "none" }}>
             📋 Riwayat Booking
           </Link>
           <Link to="/app/analytics"
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-              padding: "13px 8px", borderRadius: 14, fontSize: 13, fontWeight: 700,
-              background: "#7c3aed", color: "#fff",
-              border: "1.5px solid #7c3aed", textDecoration: "none",
-              boxShadow: "0 4px 16px rgba(124,58,237,0.32)",
-            }}>
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "13px 8px", borderRadius: 14, fontSize: 13, fontWeight: 700, background: "#7c3aed", color: "#fff", border: "1.5px solid #7c3aed", textDecoration: "none", boxShadow: "0 4px 16px rgba(124,58,237,0.32)" }}>
             📊 Revenue Analytics
           </Link>
+          {/* Request Pengiriman Baru — full width */}
+          <Link to="/app/request-shipment"
+            style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "15px", borderRadius: 16, fontSize: 15, fontWeight: 800, background: "linear-gradient(135deg,#8b5cf6,#7c3aed,#6d28d9)", color: "#fff", border: "none", textDecoration: "none", boxShadow: "0 6px 20px rgba(124,58,237,0.42)", marginTop: 2 }}>
+            🚚 Request Pengiriman Baru
+          </Link>
+        </div>
+
+        {/* Permintaan Saya */}
+        <div className="anim-fade-up anim-delay-4" style={{ marginTop: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <span style={{ fontWeight: 800, fontSize: 15 }}>Permintaan Saya</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#7c3aed", padding: "3px 10px", borderRadius: 99, background: "rgba(124,58,237,0.10)", border: "1px solid rgba(124,58,237,0.22)" }}>
+              {MOCK_MARKETPLACE_REQUESTS.filter(r => r.requester === "PT Sejuk Ekspres" || r.requester === "Superindo Sudirman").length} request
+            </span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {MOCK_MARKETPLACE_REQUESTS.map(r => (
+              <div key={r.id} style={{ background: "#fff", borderRadius: 18, border: `1.5px solid ${r.status === "pending" ? "rgba(124,58,237,0.22)" : r.status === "approved" ? "rgba(16,185,129,0.22)" : "rgba(239,68,68,0.18)"}`, padding: "14px 16px", boxShadow: "var(--shadow-sm)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                  <div style={{ fontWeight: 800, fontSize: 13.5 }}>{r.cargoEmoji.join(" ")} {r.cargo.join(", ")}</div>
+                  <span style={{ padding: "3px 10px", borderRadius: 99, fontSize: 11, fontWeight: 700, background: r.status === "pending" ? "rgba(124,58,237,0.10)" : r.status === "approved" ? "var(--success-soft)" : "var(--danger-soft)", color: r.status === "pending" ? "#7c3aed" : r.status === "approved" ? "var(--success-dark)" : "var(--danger-dark)", flexShrink: 0, marginLeft: 8 }}>
+                    {r.status === "pending" ? "⏳ Menunggu" : r.status === "approved" ? "✓ Disetujui" : "✕ Ditolak"}
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>📍 {r.origin} → {r.destination}</div>
+                <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>📅 {r.date} {r.time} · {r.weight} kg · 🌡 {r.tempC}°C</div>
+                {r.status === "approved" && (
+                  <div style={{ marginTop: 8, padding: "6px 12px", borderRadius: 10, background: "var(--success-soft)", border: "1px solid rgba(16,185,129,0.25)" }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "var(--success-dark)" }}>✓ Manager telah menyetujui — driver sedang ditugaskan</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

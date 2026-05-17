@@ -24,7 +24,7 @@ const PRIORITY_OPTIONS: { id: Priority; label: string; color: string; bg: string
 export function CreateShipmentPage() {
   const nav = useNavigate();
   const [step, setStep] = useState(1);
-  const [cargo, setCargo]   = useState<CargoType>("seafood");
+  const [cargos, setCargos] = useState<CargoType[]>(["seafood"]);
   const [weight, setWeight] = useState("500");
   const [origin, setOrigin] = useState("");
   const [dest, setDest]     = useState("");
@@ -39,7 +39,11 @@ export function CreateShipmentPage() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
-  const selectedCargo = CARGO_OPTIONS.find(c => c.id === cargo)!;
+  const selectedCargos = CARGO_OPTIONS.filter(c => cargos.includes(c.id));
+  // Use the most restrictive (lowest) temp among selected cargos
+  const minTemp = selectedCargos.length > 0
+    ? Math.min(...selectedCargos.map(c => Number(c.temp))).toString()
+    : "-2";
   const selectedDriver = MOCK_DRIVERS.find(d => d.id === driverId);
   const availableDrivers = MOCK_DRIVERS;
 
@@ -126,14 +130,41 @@ export function CreateShipmentPage() {
             <div>
               <div style={labelStyle}>Jenis Kargo</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginTop: 8 }}>
-                {CARGO_OPTIONS.map(c => (
-                  <button key={c.id} type="button" onClick={() => { setCargo(c.id); setTemp(c.temp); }}
-                    style={{ padding: "12px 8px", borderRadius: 14, border: `2px solid ${cargo === c.id ? "var(--primary)" : "var(--border)"}`, background: cargo === c.id ? "rgba(14,165,233,0.08)" : "#fff", cursor: "pointer", transition: "all 0.15s", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                    <span style={{ fontSize: 22 }}>{c.emoji}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: cargo === c.id ? "var(--primary-dark)" : "var(--text-secondary)" }}>{c.label}</span>
-                  </button>
-                ))}
+                {CARGO_OPTIONS.map(c => {
+                  const selected = cargos.includes(c.id);
+                  return (
+                    <button key={c.id} type="button"
+                      onClick={() => {
+                        setCargos(prev =>
+                          prev.includes(c.id)
+                            ? prev.filter(x => x !== c.id)
+                            : [...prev, c.id]
+                        );
+                        // auto-suggest temp only if this is the first selection
+                        if (cargos.length === 0) setTemp(c.temp);
+                      }}
+                      style={{ padding: "12px 8px", borderRadius: 14, border: `2px solid ${selected ? "var(--primary)" : "var(--border)"}`, background: selected ? "rgba(14,165,233,0.08)" : "#fff", cursor: "pointer", transition: "all 0.15s", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, position: "relative" }}>
+                      {selected && (
+                        <div style={{ position: "absolute", top: 5, right: 5, width: 14, height: 14, borderRadius: "50%", background: "var(--primary)", display: "grid", placeItems: "center" }}>
+                          <svg width="8" height="8" viewBox="0 0 8 8"><polyline points="1,4 3,6 7,2" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        </div>
+                      )}
+                      <span style={{ fontSize: 22 }}>{c.emoji}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: selected ? "var(--primary-dark)" : "var(--text-secondary)" }}>{c.label}</span>
+                    </button>
+                  );
+                })}
               </div>
+              {cargos.length > 0 && (
+                <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <span style={{ fontWeight: 600 }}>Dipilih:</span>
+                  {selectedCargos.map(c => (
+                    <span key={c.id} style={{ padding: "2px 8px", borderRadius: 99, background: "rgba(14,165,233,0.10)", color: "var(--primary-dark)", fontWeight: 700, fontSize: 11.5 }}>
+                      {c.emoji} {c.label}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Weight */}
@@ -186,7 +217,7 @@ export function CreateShipmentPage() {
                 <input type="number" value={temp} onChange={e => setTemp(e.target.value)} style={{ ...inputStyle, paddingLeft: 36 }} />
               </div>
               <div style={{ fontSize: 11.5, color: "var(--text-tertiary)", marginTop: 5 }}>
-                Disarankan untuk {selectedCargo.label}: {selectedCargo.temp}°C
+                Disarankan untuk {selectedCargos.map(c => c.label).join(", ")}: {minTemp}°C (paling ketat)
               </div>
             </div>
 
@@ -229,7 +260,7 @@ export function CreateShipmentPage() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {[
-                  { icon: <span>{selectedCargo.emoji}</span>, label: "Kargo", value: `${selectedCargo.label} · ${weight} kg` },
+                  { icon: <span>{selectedCargos.map(c => c.emoji).join(" ")}</span>, label: "Kargo", value: `${selectedCargos.map(c => c.label).join(", ")} · ${weight} kg` },
                   { icon: <MapPin size={13} color="var(--primary)" />, label: "Asal", value: origin || "—" },
                   { icon: <MapPin size={13} color="var(--success)" />, label: "Tujuan", value: dest || "—" },
                   { icon: <Clock size={13} color="var(--text-secondary)" />, label: "Jadwal", value: date && time ? `${date} ${time}` : "—" },
