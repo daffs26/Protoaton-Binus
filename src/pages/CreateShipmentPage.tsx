@@ -310,7 +310,7 @@ export function CreateShipmentPage() {
                             <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>📍 {r.km}</div>
                             <div style={{ fontSize: 13, fontWeight: 800, color: r.freshness >= 85 ? "var(--success-dark)" : "var(--warning-dark)", marginTop: 2 }}>🌿 {r.freshness}%</div>
                             <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 99, fontSize: 10.5, fontWeight: 700, background: r.riskBg, color: r.riskColor, marginTop: 2 }}>
-                              {r.key === "low" ? "✅" : r.risk === "low" ? "✅" : "⚠️"} {r.riskLabel}
+                              {r.risk === "low" ? "✅" : "⚠️"} {r.riskLabel}
                             </span>
                           </div>
                         </button>
