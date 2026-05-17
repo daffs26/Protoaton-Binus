@@ -334,3 +334,123 @@ export const MOCK_HEATMAP_ZONES = [
   { id: "z7", name: "Bogor", demand: "low", risk: "low", x: 38, y: 85 },
   { id: "z8", name: "Karawang", demand: "medium", risk: "medium", x: 88, y: 40 },
 ];
+
+export type DriverStatus = "on_duty" | "available";
+
+export type Driver = {
+  id: string;
+  name: string;
+  vehicle: string;
+  vehicleType: string;
+  phone: string;
+  rating: number;
+  totalTrips: number;
+  status: DriverStatus;
+  currentShipmentId?: string;
+  otifPct: number;
+  avgFreshness: number;
+};
+
+export const MOCK_DRIVERS: Driver[] = [
+  {
+    id: "d1",
+    name: "Budi Santoso",
+    vehicle: "Reefer B 1782 XYZ",
+    vehicleType: "Reefer Truck 8-Ton",
+    phone: "0812-3456-7890",
+    rating: 4.9,
+    totalTrips: 142,
+    status: "on_duty",
+    currentShipmentId: "1",
+    otifPct: 97,
+    avgFreshness: 89,
+  },
+  {
+    id: "d2",
+    name: "Siti Aminah",
+    vehicle: "Chiller B 9021 ABC",
+    vehicleType: "Chiller Van 3-Ton",
+    phone: "0813-2345-6789",
+    rating: 4.7,
+    totalTrips: 98,
+    status: "on_duty",
+    currentShipmentId: "2",
+    otifPct: 94,
+    avgFreshness: 91,
+  },
+  {
+    id: "d3",
+    name: "Rizky Pratama",
+    vehicle: "Reefer B 4410 DEF",
+    vehicleType: "Reefer Truck 8-Ton",
+    phone: "0814-3456-7890",
+    rating: 4.8,
+    totalTrips: 115,
+    status: "on_duty",
+    currentShipmentId: "3",
+    otifPct: 96,
+    avgFreshness: 88,
+  },
+  {
+    id: "d4",
+    name: "Ahmad Fauzi",
+    vehicle: "Chiller B 3312 GHI",
+    vehicleType: "Chiller Van 3-Ton",
+    phone: "0815-4567-8901",
+    rating: 4.6,
+    totalTrips: 76,
+    status: "on_duty",
+    currentShipmentId: "4",
+    otifPct: 92,
+    avgFreshness: 86,
+  },
+  {
+    id: "d5",
+    name: "Dewi Rahayu",
+    vehicle: "Reefer B 7760 JKL",
+    vehicleType: "Reefer Truck 8-Ton",
+    phone: "0816-5678-9012",
+    rating: 4.8,
+    totalTrips: 131,
+    status: "on_duty",
+    currentShipmentId: "5",
+    otifPct: 95,
+    avgFreshness: 87,
+  },
+  {
+    id: "d6",
+    name: "Hendra Wijaya",
+    vehicle: "Van Berinsulasi B 5522 MNO",
+    vehicleType: "Insulated Van",
+    phone: "0817-6789-0123",
+    rating: 4.7,
+    totalTrips: 89,
+    status: "available",
+    otifPct: 93,
+    avgFreshness: 92,
+  },
+  {
+    id: "d7",
+    name: "Eko Prasetyo",
+    vehicle: "Reefer B 2231 PQR",
+    vehicleType: "Reefer Truck 8-Ton",
+    phone: "0818-7890-1234",
+    rating: 4.9,
+    totalTrips: 203,
+    status: "available",
+    otifPct: 98,
+    avgFreshness: 93,
+  },
+  {
+    id: "d8",
+    name: "Rina Susanti",
+    vehicle: "Chiller B 6643 STU",
+    vehicleType: "Chiller Van 3-Ton",
+    phone: "0819-8901-2345",
+    rating: 4.6,
+    totalTrips: 54,
+    status: "available",
+    otifPct: 91,
+    avgFreshness: 90,
+  },
+];

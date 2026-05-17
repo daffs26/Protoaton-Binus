@@ -1,8 +1,9 @@
-import { AlertTriangle, ArrowRight, Brain, MapPinned, Package, BarChart3, Zap, Thermometer } from "lucide-react";
+import { AlertTriangle, ArrowRight, Brain, MapPinned, Package, BarChart3, Zap, Thermometer, Bell, Users, CheckCircle, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { MapMock } from "../components/MapMock";
 import { Card, FreshnessBar, SectionHeader, StatCard } from "../components/Ui";
-import { MOCK_SHIPMENTS } from "../data/mock";
+import { MOCK_SHIPMENTS, MOCK_NOTIFICATIONS } from "../data/mock";
 import { useApp } from "../context/AppContext";
 
 /* ── Operations Manager Dashboard ──────────────────────────────── */
@@ -10,6 +11,7 @@ function OperationsDashboard() {
   const nav = useNavigate();
   const focus = MOCK_SHIPMENTS[0]; // at-risk shipment
   const atRiskCount = MOCK_SHIPMENTS.filter((s) => s.status === "at_risk").length;
+  const unread = MOCK_NOTIFICATIONS.filter(n => n.unread).length;
 
   return (
     <div className="screen-scroll" style={{ padding: "calc(16px + env(safe-area-inset-top)) 16px 16px" }}>
@@ -26,20 +28,11 @@ function OperationsDashboard() {
             <span className="pulse-dot" style={{ width: 7, height: 7 }} />
             Live
           </span>
-          <div
-            style={{
-              width: 38,
-              height: 38,
-              borderRadius: 12,
-              background: "var(--surface)",
-              border: "1px solid var(--border)",
-              display: "grid",
-              placeItems: "center",
-              fontSize: 18,
-            }}
-          >
-            👤
-          </div>
+          <Link to="/app/notifications" style={{ position: "relative", width: 38, height: 38, borderRadius: 12, background: "var(--surface)", border: "1px solid var(--border)", display: "grid", placeItems: "center", color: "var(--text-secondary)" }}>
+            <Bell size={18} strokeWidth={1.8} />
+            {unread > 0 && (<div style={{ position: "absolute", top: -3, right: -3, minWidth: 16, height: 16, borderRadius: 99, background: "var(--danger)", border: "2px solid #fff", fontSize: 9, fontWeight: 800, color: "#fff", display: "grid", placeItems: "center", padding: "0 3px" }}>{unread}</div>)}
+          </Link>
+          <div style={{ width: 38, height: 38, borderRadius: 12, background: "var(--surface)", border: "1px solid var(--border)", display: "grid", placeItems: "center", fontSize: 18 }}>👤</div>
         </div>
       </div>
 
@@ -241,6 +234,13 @@ function OperationsDashboard() {
         >
           <BarChart3 size={17} /> Analytics
         </Link>
+        <Link
+          to="/app/drivers"
+          className="btn btn-primary btn-block"
+          style={{ padding: "13px 10px", fontSize: 13.5, gridColumn: "1 / -1" }}
+        >
+          <Users size={17} /> Driver Fleet
+        </Link>
       </div>
     </div>
   );
@@ -249,7 +249,10 @@ function OperationsDashboard() {
 /* ── Driver Dashboard ───────────────────────────────────────────── */
 function DriverDashboard() {
   const nav = useNavigate();
+  const { setDriverStatus } = useApp();
   const focus = MOCK_SHIPMENTS[0];
+  const [jobStatus, setJobStatus] = useState<"pending" | "accepted" | "rejected">("pending");
+  const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
@@ -290,6 +293,33 @@ function DriverDashboard() {
 
       {/* ── Scrollable content ──────────────────────────────────── */}
       <div className="screen-driver" style={{ padding: "14px 14px 0", display: "flex", flexDirection: "column", gap: 12 }}>
+
+        {/* Job Baru Masuk */}
+        {jobStatus !== "rejected" && (
+          <div className="anim-fade-up" style={{ borderRadius: 18, border: `2px solid ${jobStatus === "accepted" ? "rgba(16,185,129,0.35)" : "rgba(249,115,22,0.35)"}`, background: jobStatus === "accepted" ? "rgba(16,185,129,0.04)" : "rgba(249,115,22,0.04)", padding: "14px 16px", flexShrink: 0 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <div style={{ fontWeight: 800, fontSize: 14 }}>📦 Job Baru Masuk</div>
+              <span style={{ padding: "3px 10px", borderRadius: 99, background: jobStatus === "accepted" ? "var(--success-soft)" : "var(--warning-soft)", color: jobStatus === "accepted" ? "var(--success-dark)" : "var(--warning-dark)", fontSize: 11, fontWeight: 700 }}>
+                {jobStatus === "accepted" ? "✓ Diterima" : "Menunggu"}
+              </span>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700 }}>SHP-2059 · Sayur Organik</div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>Farm Cibodas → Superindo Sudirman</div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 1 }}>📅 18 Mei 2026 · 07:00 · 🌡 4°C</div>
+            {jobStatus === "pending" && (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
+                <button type="button" onClick={() => { setJobStatus("accepted"); setDriverStatus("on_duty"); }}
+                  style={{ padding: "10px", borderRadius: 12, border: "none", background: "linear-gradient(135deg,#34d399,#10b981)", color: "#fff", fontWeight: 800, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <CheckCircle size={15} /> Terima
+                </button>
+                <button type="button" onClick={() => setJobStatus("rejected")}
+                  style={{ padding: "10px", borderRadius: 12, border: "1.5px solid rgba(239,68,68,0.35)", background: "transparent", color: "var(--danger-dark)", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <X size={15} /> Tolak
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Map */}
         <div className="anim-fade-up" style={{ borderRadius: 18, overflow: "hidden", flexShrink: 0, boxShadow: "0 4px 20px rgba(15,23,42,0.10)" }}>
@@ -375,6 +405,11 @@ function DriverDashboard() {
                 <AlertTriangle size={17} /> Tinjau Smart Alert
               </button>
             )}
+            {/* Selesai Pengiriman */}
+            <button type="button" onClick={() => setShowConfirm(true)}
+              style={{ width: "100%", padding: "11px", borderRadius: 13, border: "1.5px solid rgba(16,185,129,0.38)", background: "rgba(16,185,129,0.07)", color: "var(--success-dark)", fontWeight: 800, fontSize: 13.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginTop: 4 }}>
+              <CheckCircle size={16} /> Selesai Pengiriman
+            </button>
           </div>
         </div>
 
@@ -458,10 +493,37 @@ function DriverDashboard() {
         </div>
 
       </div>
+
+      {/* Confirmation modal */}
+      {showConfirm && (
+        <div style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "flex-end", zIndex: 200, backdropFilter: "blur(4px)" }}>
+          <div style={{ background: "#fff", width: "100%", borderRadius: "24px 24px 0 0", padding: "28px 24px", paddingBottom: "calc(28px + env(safe-area-inset-bottom))" }}>
+            <div style={{ width: 40, height: 4, borderRadius: 99, background: "var(--border)", margin: "0 auto 20px" }} />
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--success-soft)", display: "grid", placeItems: "center", margin: "0 auto 12px" }}>
+                <CheckCircle size={28} color="var(--success)" />
+              </div>
+              <div style={{ fontWeight: 900, fontSize: 17 }}>Konfirmasi Selesai?</div>
+              <div style={{ fontSize: 13.5, color: "var(--text-secondary)", marginTop: 6, lineHeight: 1.5 }}>
+                Tandai pengiriman <strong>{focus.code}</strong> sebagai selesai?
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <button type="button" onClick={() => setShowConfirm(false)}
+                style={{ padding: "14px", borderRadius: 14, border: "1.5px solid var(--border)", background: "#fff", fontWeight: 700, fontSize: 14.5, cursor: "pointer", color: "var(--text-secondary)" }}>
+                Batalkan
+              </button>
+              <button type="button" onClick={() => { setShowConfirm(false); nav(`/app/delivery-success/${focus.id}`); }}
+                style={{ padding: "14px", borderRadius: 14, border: "none", background: "linear-gradient(135deg,#34d399,#10b981)", color: "#fff", fontWeight: 800, fontSize: 14.5, cursor: "pointer", boxShadow: "0 4px 16px rgba(16,185,129,0.35)" }}>
+                ✓ Konfirmasi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
 
 
 /* ── Marketplace Dashboard ──────────────────────────────────────── */

@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import type { UserRole } from "../types";
+import type { DriverStatus } from "../data/mock";
 
 type AppContextValue = {
   role: UserRole | null;
@@ -16,6 +17,8 @@ type AppContextValue = {
   logout: () => void;
   showAiAlert: boolean;
   setShowAiAlert: (v: boolean) => void;
+  driverStatus: DriverStatus;
+  setDriverStatus: (s: DriverStatus) => void;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -37,6 +40,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [role, setRoleState] = useState<UserRole | null>(loadRole);
   const [isAuthenticated, setAuth] = useState(loadAuth);
   const [showAiAlert, setShowAiAlert] = useState(false);
+  const [driverStatus, setDriverStatus] = useState<DriverStatus>("on_duty");
 
   const setRole = useCallback((r: UserRole) => {
     localStorage.setItem(ROLE_KEY, r);
@@ -64,8 +68,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       logout,
       showAiAlert,
       setShowAiAlert,
+      driverStatus,
+      setDriverStatus,
     }),
-    [role, setRole, isAuthenticated, login, logout, showAiAlert],
+    [role, setRole, isAuthenticated, login, logout, showAiAlert, driverStatus],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -19,13 +19,15 @@ import { HistoryPage } from "./pages/HistoryPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { HeatmapPage } from "./pages/HeatmapPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { CreateShipmentPage } from "./pages/CreateShipmentPage";
+import { DriverManagementPage } from "./pages/DriverManagementPage";
 
 export default function App() {
   return (
     <div className="phone-frame">
       <div className="phone-shell">
         {/* This div maintains the flex height chain so screen-scroll works */}
-        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
           <Routes>
             <Route path="/" element={<Navigate to="/splash" replace />} />
             <Route path="/splash" element={<SplashPage />} />
@@ -51,6 +53,8 @@ export default function App() {
                   <Route path="history" element={<HistoryPage />} />
                   <Route path="analytics" element={<AnalyticsPage />} />
                   <Route path="heatmap" element={<HeatmapPage />} />
+                  <Route path="create-shipment" element={<CreateShipmentPage />} />
+                  <Route path="drivers" element={<DriverManagementPage />} />
                 </Route>
               </Route>
             </Route>
